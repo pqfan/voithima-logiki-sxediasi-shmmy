@@ -1,0 +1,503 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2.2cm, bottom=2.2cm, left=2cm, right=2cm]{geometry}
+\usepackage{fontspec}
+
+\usepackage[greek, bidi=basic, provide=*]{babel}
+
+\babelprovide[import, onchar=ids fonts]{greek}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% Set default font to Noto Sans in the main (rm) slot
+\babelfont{rm}{Noto Sans}
+\babelfont[greek]{rm}{Noto Sans}
+\babelfont{sf}{Noto Sans}
+\babelfont{tt}{Noto Sans Mono}
+
+\usepackage{enumitem}
+\setlist[itemize]{label=-}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table]{xcolor}
+
+% Define custom colors and reusable callout environments
+\definecolor{methodbg}{RGB}{240, 246, 255}
+\definecolor{methodframe}{RGB}{30, 90, 180}
+\definecolor{tipbg}{RGB}{242, 250, 244}
+\definecolor{tipframe}{RGB}{35, 130, 70}
+
+\newcommand{\methodbox}[2]{%
+  \par\medskip\noindent
+  \fcolorbox{methodframe}{methodbg}{%
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+      \vspace{0.2em}
+      \textbf{\textcolor{methodframe}{Μεθοδολογική Προσέγγιση — #1}}\par\smallskip
+      #2
+      \vspace{0.2em}
+    \end{minipage}%
+  }\par\medskip
+}
+
+\newcommand{\tipbox}[2]{%
+  \par\medskip\noindent
+  \fcolorbox{tipframe}{tipbg}{%
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+      \vspace{0.2em}
+      \textbf{\textcolor{tipframe}{Σημείωση / Βέλτιστη Επιλογή — #1}}\par\smallskip
+      #2
+      \vspace{0.2em}
+    \end{minipage}%
+  }\par\medskip
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Λογική Σχεδίαση Ψηφιακών Συστημάτων}}\\[0.4em]
+    {\large \textbf{Πλήρης Οδηγός Επίλυσης Θεμάτων Κανονικής Εξεταστικής (28 Ιανουαρίου 2025)}}\\[0.4em]
+    {\normalsize Εθνικό Μετσόβιο Πολυτεχνείο (ΕΜΠ) --- Σχολή Ηλεκτρολόγων Μηχανικών και Μηχανικών Υπολογιστών (ΗΜΜΥ)}
+\end{center}
+
+\vspace{0.3em}
+\hrule height 1pt
+\vspace{0.6em}
+
+\begin{itemize}[noitemsep, topsep=0pt]
+    \item \textbf{Εξεταστική Περίοδος:} Κανονική Εξεταστική --- 28 Ιανουαρίου 2025
+    \item \textbf{Σύνολο Μονάδων:} $10{,}0$ (Θέμα 1: $1{,}5$, Θέμα 2: $1{,}5$, Θέμα 3: $3{,}0$, Θέμα 4: $4{,}0$)
+\end{itemize}
+
+\vspace{0.3em}
+\hrule height 0.5pt
+\vspace{0.8em}
+
+\section*{Θέμα 1 (1,5 μονάδες) --- Αριθμητική Συμπληρώματος ως προς 2 (5-bit) \& Κωδικοποίηση BCD}
+
+\methodbox{Αναπαράσταση Συμπληρώματος ως προς 2 ($n = 5\text{ bits}$) \& Έλεγχος Υπερχείλισης}{
+\begin{enumerate}[leftmargin=1.5em, noitemsep, topsep=2pt]
+    \item \textbf{Βάρη Ψηφίων και Εύρος Τιμών:} Το αριστερότερο ψηφίο ($\text{MSB}$, θέση $4$) έχει αρνητικό βάρος $-2^4 = -16$ και καθορίζει το πρόσημο ($0$ για μη αρνητικούς, $1$ για αρνητικούς αριθμούς), ενώ τα υπόλοιπα $4$ ψηφία (θέσεις $3, 2, 1, 0$) έχουν θετικά βάρη $8, 4, 2, 1$. Το εύρος αναπαραστάσιμων ακεραίων είναι:
+    \[
+    \boxed{[-2^{5-1}, \, 2^{5-1} - 1] = [-16, \, +15]}
+    \]
+    \item \textbf{Κριτήριο και Είδος Υπερχείλισης (Overflow):} Υπερχείλιση ($V = 1$) προκύπτει αν και μόνο αν το κρατούμενο εισόδου στη θέση προσήμου ($C_4$) διαφέρει από το κρατούμενο εξόδου ($C_5$):
+    \[
+    \boxed{V = C_4 \oplus C_5}
+    \]
+    \begin{itemize}[noitemsep, topsep=2pt]
+        \item \textbf{Θετική Υπερχείλιση:} Προστίθενται δύο θετικοί αριθμοί ($\text{MSB}=0$), το αλγεβρικό άθροισμα υπερβαίνει το $+15$ και προκύπτει αρνητικό πρόσημο ($\text{MSB}=1$, με $C_4=1, \, C_5=0$).
+        \item \textbf{Αρνητική Υπερχείλιση:} Προστίθενται δύο αρνητικοί αριθμοί ($\text{MSB}=1$), το αλγεβρικό άθροισμα είναι μικρότερο του $-16$ και προκύπτει θετικό πρόσημο ($\text{MSB}=0$, με $C_4=0, \, C_5=1$).
+        \item \textbf{Καμία Υπερχείλιση ($V=0$):} Όταν $C_4 = C_5$. Τυχόν εξερχόμενο κρατούμενο $C_5 = 1$ αγνοείται.
+    \end{itemize}
+\end{enumerate}
+}
+
+\subsection*{α. Μετατροπή σε 5-bit Συμπλήρωμα ως προς 2 και Εκτέλεση Πράξεων}
+
+\subsubsection*{(i) Πράξη $+7 + 14$}
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Μετατροπή τελεστέων σε 5-bit συμπλήρωμα ως προς 2:}
+    \[
+    +7_{10} = 4 + 2 + 1 = (00111)_2, \qquad +14_{10} = 8 + 4 + 2 = (01110)_2
+    \]
+    \item \textbf{Κάθετη δυαδική πρόσθεση και καταγραφή όλων των κρατουμένων ($C_0 = 0$):}
+    \[
+    \begin{array}{r@{\quad}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\quad}l}
+    \text{Θέση bit } i: & 5 & 4 & 3 & 2 & 1 & 0 & \\
+    \text{Κρατούμενα } C_i: & \mathbf{0} & \mathbf{1} & \mathbf{1} & \mathbf{1} & \mathbf{0} & 0 & (C_5=0, \, C_4=1, \, C_3=1, \, C_2=1, \, C_1=0, \, C_0=0) \\
+    \hline
+    +7_{10}: & & 0 & 0 & 1 & 1 & 1 & \\
+    +14_{10}: & + & 0 & 1 & 1 & 1 & 0 & \\
+    \hline
+    \text{Άθροισμα } S: & & \mathbf{1} & 0 & 1 & 0 & 1 &
+    \end{array}
+    \]
+    \item \textbf{Χαρακτηρισμός Υπερχείλισης:}
+    \[
+    \boxed{S = (10101)_2, \quad V = C_4 \oplus C_5 = 1 \oplus 0 = 1 \implies \text{Θετική Υπερχείλιση (Positive Overflow)}}
+    \]
+    Προστέθηκαν δύο θετικοί αριθμοί ($A_4=0, B_4=0$) και προέκυψε αποτέλεσμα με ψηφίο προσήμου $S_4=1$ (το οποίο ερμηνεύεται ως $-16 + 4 + 1 = -11_{10}$), διότι το πραγματικό άθροισμα $+7 + 14 = +21_{10}$ υπερβαίνει το άνω όριο $+15$.
+\end{enumerate}
+
+\subsubsection*{(ii) Πράξη $+5 - 14 = (+5) + (-14)$}
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Μετατροπή τελεστέων σε 5-bit συμπλήρωμα ως προς 2:}
+    \[
+    +5_{10} = (00101)_2, \qquad +14_{10} = (01110)_2 \xrightarrow{\text{1's comp.}} (10001)_2 \xrightarrow{+1} -14_{10} = (10010)_2 \;\; (-16 + 2 = -14)
+    \]
+    \item \textbf{Κάθετη δυαδική πρόσθεση και καταγραφή όλων των κρατουμένων ($C_0 = 0$):}
+    \[
+    \begin{array}{r@{\quad}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\quad}l}
+    \text{Θέση bit } i: & 5 & 4 & 3 & 2 & 1 & 0 & \\
+    \text{Κρατούμενα } C_i: & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & 0 & (C_5=0, \, C_4=0, \, C_3=0, \, C_2=0, \, C_1=0, \, C_0=0) \\
+    \hline
+    +5_{10}: & & 0 & 0 & 1 & 0 & 1 & \\
+    -14_{10}: & + & 1 & 0 & 0 & 1 & 0 & \\
+    \hline
+    \text{Άθροισμα } S: & & \mathbf{1} & 0 & 1 & 1 & 1 &
+    \end{array}
+    \]
+    \item \textbf{Χαρακτηρισμός Υπερχείλισης:}
+    \[
+    \boxed{S = (10111)_2 = -9_{10}, \quad V = C_4 \oplus C_5 = 0 \oplus 0 = 0 \implies \text{Καμία Υπερχείλιση}}
+    \]
+    Προστίθενται ετερόσημοι αριθμοί και το αποτέλεσμα $-16 + 4 + 2 + 1 = -9_{10}$ βρίσκεται εντός του $[-16, +15]$.
+\end{enumerate}
+
+\subsubsection*{(iii) Πράξη $-7 - 5 = (-7) + (-5)$}
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Μετατροπή τελεστέων σε 5-bit συμπλήρωμα ως προς 2:}
+    \[
+    +7_{10} = (00111)_2 \implies -7_{10} = (11001)_2, \qquad +5_{10} = (00101)_2 \implies -5_{10} = (11011)_2
+    \]
+    \item \textbf{Κάθετη δυαδική πρόσθεση και καταγραφή όλων των κρατουμένων ($C_0 = 0$):}
+    \[
+    \begin{array}{r@{\quad}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\;\;}c@{\quad}l}
+    \text{Θέση bit } i: & 5 & 4 & 3 & 2 & 1 & 0 & \\
+    \text{Κρατούμενα } C_i: & \mathbf{1} & \mathbf{1} & \mathbf{0} & \mathbf{1} & \mathbf{1} & 0 & (C_5=1, \, C_4=1, \, C_3=0, \, C_2=1, \, C_1=1, \, C_0=0) \\
+    \hline
+    -7_{10}: & & 1 & 1 & 0 & 0 & 1 & \\
+    -5_{10}: & + & 1 & 1 & 0 & 1 & 1 & \\
+    \hline
+    \text{Άθροισμα } S: & (\mathbf{1}) & \mathbf{1} & 0 & 1 & 0 & 0 &
+    \end{array}
+    \]
+    \item \textbf{Χαρακτηρισμός Υπερχείλισης:}
+    \[
+    \boxed{S = (10100)_2 = -12_{10}, \quad V = C_4 \oplus C_5 = 1 \oplus 1 = 0 \implies \text{Καμία Υπερχείλιση}}
+    \]
+    Αγνοώντας το εξερχόμενο κρατούμενο $C_5=1$, η λέξη 5-bit είναι $(10100)_2 = -16 + 4 = -12_{10} \in [-16, +15]$.
+\end{enumerate}
+
+\subsection*{β. Ερμηνεία Καταχωρητή 12-bit (\texttt{010101100100})}
+
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Αναπαράσταση BCD (Binary-Coded Decimal --- Κώδικας 8421):}
+    Χωρίζουμε τα $12\text{ bits}$ σε $3$ τετράδες (nibbles), καθεμία εκ των οποίων παριστάνει ένα δεκαδικό ψηφίο:
+    \[
+    (\underbrace{0101}_{\text{Εκατοντάδες } (5)} \; \underbrace{0110}_{\text{Δεκάδες } (6)} \; \underbrace{0100}_{\text{Μονάδες } (4)})_{\text{BCD}} \implies \boxed{N_{\text{BCD}} = 564_{10}}
+    \]
+    \item \textbf{Μη-Προσημασμένη Δυαδική Αναπαράσταση (Unsigned Binary):}
+    Αθροίζουμε τις δυνάμεις του $2$ στις θέσεις $i \in \{10, 8, 6, 5, 2\}$ όπου $b_i = 1$:
+    \[
+    N_{\text{unsigned}} = 2^{10} + 2^8 + 2^6 + 2^5 + 2^2 = 1024 + 256 + 64 + 32 + 4 \implies \boxed{N_{\text{unsigned}} = 1380_{10}}
+    \]
+\end{enumerate}
+
+\vspace{0.5em}
+\hrule height 0.5pt
+\vspace{0.8em}
+
+\section*{Θέμα 2 (1,5 μονάδα) --- Ελαχιστοποίηση Karnaugh \& Σύνθεση με Πολυπλέκτη $4\times 1$}
+
+Δίδεται η λογική συνάρτηση 4 μεταβλητών:
+\[
+f(w, x, y, z) = \sum m(1, 3, 4, 11, 12, 14) + d(13, 15)
+\]
+όπου κάθε μεταβλητή είναι διαθέσιμη σε ορθή και αντεστραμμένη μορφή ($w, \overline{w}, x, \overline{x}, y, \overline{y}, z, \overline{z}$).
+
+\subsection*{α. Ελαχιστοποίηση σε Άθροισμα Γινομένων (SOP) με Χάρτη Karnaugh}
+
+Τοποθετούμε τα $wx$ στον κάθετο άξονα και τα $yz$ στον οριζόντιο άξονα:
+\[
+\begin{array}{c|cccc}
+wx \setminus yz & 00 & 01 & 11 & 10 \\
+\hline
+00 & 0_{m_0} & \mathbf{1}_{m_1} & \mathbf{1}_{m_3} & 0_{m_2} \\
+01 & \mathbf{1}_{m_4} & 0_{m_5} & 0_{m_7} & 0_{m_6} \\
+11 & \mathbf{1}_{m_{12}} & \mathbf{X}_{m_{13}} & \mathbf{X}_{m_{15}} & \mathbf{1}_{m_{14}} \\
+10 & 0_{m_8} & 0_{m_9} & \mathbf{1}_{m_{11}} & 0_{m_{10}}
+\end{array}
+\]
+
+\textbf{Ανάλυση Βέλτιστων Ομαδοποιήσεων (Κύριοι Υπονοούμενοι Όροι):}
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item \textbf{Ομάδα 1 --- Τετράδα $(m_{12}, m_{13}, m_{15}, m_{14})$:} Ολόκληρη η γραμμή $wx = 11$ (θέτοντας $m_{13}=m_{15}=1$), η οποία καλύπτει μοναδικά το $m_{14} \implies P_1 = w \cdot x$.
+    \item \textbf{Ομάδα 2 --- Δυάδα $(m_1, m_3)$:} Γραμμή $wx = 00$, στήλες $yz \in \{01, 11\}$, καλύπτει μοναδικά το $m_1 \implies P_2 = \overline{w} \cdot \overline{x} \cdot z$.
+    \item \textbf{Ομάδα 3 --- Δυάδα $(m_4, m_{12})$:} Γραμμές $wx \in \{01, 11\}$, στήλη $yz = 00$, καλύπτει μοναδικά το $m_4 \implies P_3 = x \cdot \overline{y} \cdot \overline{z}$.
+    \item \textbf{Ομάδα 4 --- Δυάδα για το $m_{11}$:} Καλύπτεται είτε με τη δυάδα $(m_{11}, m_{15}) \implies P_4 = w \cdot y \cdot z$, είτε ισοδύναμα με τη δυάδα $(m_3, m_{11}) \implies P_4' = \overline{x} \cdot y \cdot z$.
+\end{itemize}
+
+\[
+\boxed{f(w, x, y, z) = w\,x + \overline{w}\,\overline{x}\,z + x\,\overline{y}\,\overline{z} + w\,y\,z} \quad \left(\text{ή ισοδύναμα: } \boxed{w\,x + \overline{w}\,\overline{x}\,z + x\,\overline{y}\,\overline{z} + \overline{x}\,y\,z}\right)
+\]
+
+Η υλοποίηση σε λογικό κύκλωμα δύο επιπέδων AND--OR απαιτεί \textbf{μία πύλη AND 2 εισόδων} ($w, x$), \textbf{τρεις πύλες AND 3 εισόδων} ($\overline{w},\overline{x},z$, \; $x,\overline{y},\overline{z}$ και $w,y,z$) και \textbf{μία πύλη OR 4 εισόδων} στην έξοδο.
+
+\subsection*{β. Υλοποίηση με Έναν Πολυπλέκτη $4\times 1$, Μία Πύλη NAND και Μία NOT}
+
+\tipbox{Επιλογή Μεταβλητών Ελέγχου $(S_1, S_0)$}{
+Επιλέγουμε ως εισόδους επιλογής $S_1, S_0$ ένα ζεύγος μεταβλητών έτσι ώστε οι $3$ από τις $4$ εισόδους δεδομένων ($I_0, I_1, I_2, I_3$) του πολυπλέκτη $4\times 1$ να ανάγονται σε απλές μεταβλητές και μόνο μία είσοδος να απαιτεί λογικό γινόμενο δύο όρων, το οποίο υλοποιείται ως $\text{AND}(a,b) = \text{NOT}(\text{NAND}(a,b))$.
+}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Επιλογή 1: Είσοδοι επιλογής $S_1 = x, \, S_0 = y$ (Συναρτήσεις εισόδου ως προς $w, z$):}
+    \[
+    \begin{aligned}
+    I_0 \ (xy = 00) &: \quad \overline{w} \cdot z = \overline{\overline{\overline{w} \cdot z}} = \text{NOT}\!\left(\text{NAND}(\overline{w}, z)\right) \quad (\text{καθώς } m_1 = 1, \; m_0=m_8=m_9=0) \\
+    I_1 \ (xy = 01) &: \quad z \quad (\text{καθώς } m_3 = 1, \; m_{11} = 1, \; m_2=m_{10}=0) \\
+    I_2 \ (xy = 10) &: \quad \overline{z} \quad (\text{καθώς } m_4 = 1, \; m_{12} = 1, \text{ θέτοντας } m_{13} = 0) \\
+    I_3 \ (xy = 11) &: \quad w \quad (\text{καθώς } m_{14} = 1, \text{ θέτοντας } m_{15} = 1 \text{ και } m_6=m_7=0)
+    \end{aligned}
+    \]
+    \[
+    \boxed{S_1 = x, \; S_0 = y \implies I_0 = \overline{\overline{\overline{w} \cdot z}}, \quad I_1 = z, \quad I_2 = \overline{z}, \quad I_3 = w}
+    \]
+
+    \item \textbf{Επιλογή 2 (Ισοδύναμη): Είσοδοι επιλογής $S_1 = w, \, S_0 = z$ (Συναρτήσεις εισόδου ως προς $x, y$):}
+    \[
+    \boxed{S_1 = w, \; S_0 = z \implies I_0 = x \cdot \overline{y} = \overline{\overline{x \cdot \overline{y}}}, \quad I_1 = \overline{x}, \quad I_2 = x, \quad I_3 = y \;\; (\text{με } m_{13}=0, \, m_{15}=1)}
+    \]
+\end{itemize}
+
+\vspace{0.5em}
+\hrule height 0.5pt
+\vspace{0.8em}
+
+\section*{Θέμα 3 (3,0 μονάδες) --- Σύνθεση Ακολουθιακού Κυκλώματος (Mealy FSM)}
+
+\methodbox{Κωδικοποίηση Καταστάσεων, Είσοδος $x$ και Αδιάφοροι Όροι}{
+\begin{itemize}[leftmargin=1.5em, noitemsep, topsep=2pt]
+    \item Τα $3\text{ bits}$ της κατάστασης συμβολίζονται με $A B C$, όπου $A$ ($\text{MSB}$): D Flip-Flop, $B$: T Flip-Flop, και $C$ ($\text{LSB}$): JK Flip-Flop.
+    \item Η είσοδος $x$ τοποθετείται τελευταία στη σειρά των μεταβλητών ($A, B, C, x$), οπότε κάθε γραμμή του πίνακα μεταβάσεων αντιστοιχεί στον ελαχιστόρο $m_i = 8A + 4B + 2C + x$.
+    \item Οι καταστάσεις $\{001, 100, 111\}$ δεν εμφανίζονται στο διάγραμμα καταστάσεων, επομένως οι ελαχιστόροι $d = \{m_2, m_3, m_8, m_9, m_{14}, m_{15}\}$ είναι \textbf{αδιάφοροι όροι ($X$)}.
+\end{itemize}
+}
+
+\subsection*{Πλήρης Πίνακας Μεταβάσεων, Διέγερσης Flip-Flops και Εξόδου}
+
+\[
+\begin{array}{c|ccc|c|ccc|c|c|cc|c}
+\toprule
+m_i & A & B & C & x & A^+ & B^+ & C^+ & D_A = A^+ & T_B = B \oplus B^+ & J_C & K_C & Y \\
+\midrule
+m_0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 & X & 0 \\
+m_1 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X & 0 \\
+m_2 & 0 & 0 & 1 & 0 & X & X & X & X & X & X & X & X \\
+m_3 & 0 & 0 & 1 & 1 & X & X & X & X & X & X & X & X \\
+\midrule
+m_4 & 0 & 1 & 0 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & X & 1 \\
+m_5 & 0 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & X & 1 \\
+m_6 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 0 & X & 1 & 0 \\
+m_7 & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & X & 1 & 0 \\
+\midrule
+m_8 & 1 & 0 & 0 & 0 & X & X & X & X & X & X & X & X \\
+m_9 & 1 & 0 & 0 & 1 & X & X & X & X & X & X & X & X \\
+m_{10} & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & X & 1 & 1 \\
+m_{11} & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X & 0 & 0 \\
+\midrule
+m_{12} & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & X & 1 \\
+m_{13} & 1 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & X & 1 \\
+m_{14} & 1 & 1 & 1 & 0 & X & X & X & X & X & X & X & X \\
+m_{15} & 1 & 1 & 1 & 1 & X & X & X & X & X & X & X & X \\
+\bottomrule
+\end{array}
+\]
+
+\subsection*{i. Υλοποίηση Εισόδου $D_A$ ($\text{MSB}$) Αποκλειστικά με Πύλες NAND}
+
+\[
+D_A(A, B, C, x) = \sum m(1, 4, 5, 6, 13) + d(2, 3, 8, 9, 14, 15)
+\]
+\[
+\begin{array}{c|cccc}
+AB \setminus Cx & 00 & 01 & 11 & 10 \\
+\hline
+00 & 0_{m_0} & \mathbf{1}_{m_1} & X_{m_3} & X_{m_2} \\
+01 & \mathbf{1}_{m_4} & \mathbf{1}_{m_5} & 0_{m_7} & \mathbf{1}_{m_6} \\
+11 & 0_{m_{12}} & \mathbf{1}_{m_{13}} & X_{m_{15}} & X_{m_{14}} \\
+10 & X_{m_8} & \mathbf{X}_{m_9} & 0_{m_{11}} & 0_{m_{10}}
+\end{array}
+\]
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item \textbf{Τετράδα $(m_1, m_5, m_{13}, m_9)$:} Στήλη $Cx = 01 \implies \overline{C} \cdot x$.
+    \item \textbf{Δυάδα $(m_4, m_6)$:} Γραμμή $AB = 01$, στήλες $Cx \in \{00, 10\} \implies \overline{A} \cdot B \cdot \overline{x}$.
+\end{itemize}
+Με εφαρμογή του θεωρήματος De Morgan για υλοποίηση αποκλειστικά με πύλες NAND:
+\[
+\boxed{D_A = \overline{C}\,x + \overline{A}\,B\,\overline{x} = \overline{\overline{\overline{C} \cdot x} \cdot \overline{\overline{A} \cdot B \cdot \overline{x}}}}
+\]
+(Υλοποιείται με μία πύλη NAND ως αναστροφέα για το $\overline{x} = \overline{x \cdot x}$, μία NAND 2 εισόδων για το $\overline{\overline{C}\cdot x}$, μία NAND 3 εισόδων για το $\overline{\overline{A}\cdot B \cdot \overline{x}}$ και μία τελική NAND 2 εισόδων).
+
+\subsection*{ii. Υλοποίηση Εισόδου $T_B$ με Αποκωδικοποιητή 4 σε 16 και Μία Κατάλληλη Πύλη}
+
+\[
+T_B(A, B, C, x) = \sum m(0, 5, 10, 11, 12) + d(2, 3, 8, 9, 14, 15)
+\]
+Θέτοντας όλους τους αδιάφορους όρους ίσους με $0$, συνδέουμε τις εισόδους $A, B, C, x$ στις εισόδους επιλογής $S_3, S_2, S_1, S_0$ του αποκωδικοποιητή $4:16$ και οδηγούμε τις $5$ ενεργές εξόδους σε \textbf{μία πύλη OR 5 εισόδων}:
+\[
+\boxed{T_B = O_0 + O_5 + O_{10} + O_{11} + O_{12}} \quad \left(\text{ή ισοδύναμα με πύλη NOR 5 εισόδων: } \boxed{T_B = \overline{O_1 + O_4 + O_6 + O_7 + O_{13}}}\right)
+\]
+
+\subsection*{iii. Υλοποίηση Εισόδου $J_C$ με Βέλτιστο Πολυπλέκτη και $K_C$ Αποκλειστικά με Πύλες NOR}
+
+\paragraph{1. Ελαχιστοποίηση και Υλοποίηση της Εισόδου $J_C$:}
+\[
+J_C(A, B, C, x) = \sum m(0, 1, 5) + d(2, 3, 6, 7, 8, 9, 10, 11, 14, 15)
+\]
+\paragraph{2. Ελαχιστοποίηση και Υλοποίηση της Εισόδου $K_C$:}
+\[
+K_C(A, B, C, x) = \sum m(6, 7, 10) + d(0, 1, 2, 3, 4, 5, 8, 9, 12, 13, 14, 15)
+\]
+\[
+\begin{array}{c|cccc}
+J_C: AB \setminus Cx & 00 & 01 & 11 & 10 \\
+\hline
+00 & \mathbf{1}_{m_0} & \mathbf{1}_{m_1} & \mathbf{X}_{m_3} & \mathbf{X}_{m_2} \\
+01 & 0_{m_4} & \mathbf{1}_{m_5} & \mathbf{X}_{m_7} & X_{m_6} \\
+11 & 0_{m_{12}} & 0_{m_{13}} & X_{m_{15}} & X_{m_{14}} \\
+10 & \mathbf{X}_{m_8} & \mathbf{X}_{m_9} & \mathbf{X}_{m_{11}} & \mathbf{X}_{m_{10}}
+\end{array}
+\qquad\qquad
+\begin{array}{c|cccc}
+K_C: AB \setminus Cx & 00 & 01 & 11 & 10 \\
+\hline
+00 & X_{m_0} & X_{m_1} & X_{m_3} & X_{m_2} \\
+01 & \mathbf{X}_{m_4} & \mathbf{X}_{m_5} & \mathbf{1}_{m_7} & \mathbf{1}_{m_6} \\
+11 & \mathbf{X}_{m_{12}} & \mathbf{X}_{m_{13}} & \mathbf{X}_{m_{15}} & \mathbf{X}_{m_{14}} \\
+10 & \mathbf{X}_{m_8} & X_{m_9} & 0_{m_{11}} & \mathbf{1}_{m_{10}}
+\end{array}
+\]
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Για το $J_C$:} Ομαδοποιώντας την οκτάδα $B=0$ ($AB \in \{00, 10\} \implies \overline{B}$) και την τετράδα $(m_1, m_3, m_5, m_7) \implies \overline{A} \cdot x$, η μεταβλητή $C$ απαλείφεται. Άρα υλοποιείται με \textbf{Πολυπλέκτη $4\times 1$} χωρίς καμία εξωτερική πύλη:
+    \[
+    \boxed{J_C(A, B, x) = \overline{B} + \overline{A}\,x \implies \text{MUX } 4\times 1 \text{ με } S_1 = A, \, S_0 = B: \quad I_0 = 1, \;\; I_1 = x, \;\; I_2 = 1, \;\; I_3 = 0}
+    \]
+    \item \textbf{Για το $K_C$:} Ομαδοποιώντας την οκτάδα $B=1$ ($AB \in \{01, 11\}$) και την οκτάδα $x=0$ ($Cx \in \{00, 10\}$) ---ή ισοδύναμα μέσω του μοναδικού μηδενικού στο $m_{11}$ ($A=1, B=0, C=1, x=1$)--- προκύπτει:
+    \[
+    \boxed{K_C = B + \overline{x} = \overline{\overline{B + \overline{x}}}} \quad \left(\text{ή ισοδύναμα: } \boxed{K_C = \overline{A} + \overline{x} = \overline{\overline{\overline{A} + \overline{x}}}}\right)
+    \]
+    Υλοποιείται αποκλειστικά με πύλες NOR: μία NOR ως αναστροφέας $\overline{x} = \overline{x+x}$, μία NOR 2 εισόδων με εισόδους $(B, \overline{x})$ και μία NOR ως τελικός αναστροφέας στην έξοδο.
+\end{itemize}
+
+\subsection*{iv. Υλοποίηση της Εξόδου $Y$ Αποκλειστικά με Πύλες NAND}
+
+\[
+Y(A, B, C, x) = \sum m(4, 5, 10, 12, 13) + d(2, 3, 8, 9, 14, 15)
+\]
+\[
+\begin{array}{c|cccc}
+AB \setminus Cx & 00 & 01 & 11 & 10 \\
+\hline
+00 & 0_{m_0} & 0_{m_1} & X_{m_3} & X_{m_2} \\
+01 & \mathbf{1}_{m_4} & \mathbf{1}_{m_5} & 0_{m_7} & 0_{m_6} \\
+11 & \mathbf{1}_{m_{12}} & \mathbf{1}_{m_{13}} & X_{m_{15}} & \mathbf{X}_{m_{14}} \\
+10 & \mathbf{X}_{m_8} & X_{m_9} & 0_{m_{11}} & \mathbf{1}_{m_{10}}
+\end{array}
+\]
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item \textbf{Τετράδα $(m_4, m_5, m_{12}, m_{13})$:} $B \cdot \overline{C}$.
+    \item \textbf{Τετράδα $(m_8, m_{10}, m_{12}, m_{14})$:} $A \cdot \overline{x}$.
+\end{itemize}
+\[
+\boxed{Y = B\,\overline{C} + A\,\overline{x} = \overline{\overline{B \cdot \overline{C}} \cdot \overline{A \cdot \overline{x}}}}
+\]
+
+\vspace{0.5em}
+\hrule height 0.5pt
+\vspace{0.8em}
+
+\section*{Θέμα 4 (4,0 μονάδες) --- Σχεδίαση Παραμετρικού Ελεγκτή Λαμπτήρων $L_1, L_2$}
+
+\subsection*{Α) (2,5 μονάδες) Εναλλασσόμενη Φωτοβόληση $L_1$ ($N_1$ παλμούς) και $L_2$ ($N_2$ παλμούς)}
+
+\methodbox{Αρχιτεκτονική 4 Υποσυστημάτων}{
+Το σύγχρονο ακολουθιακό κύκλωμα αποτελείται από $4$ διακριτές βαθμίδες, υλοποιημένες αποκλειστικά με JK flip-flops, πολυπλέκτες και πύλες AND/OR/NOT:
+\begin{enumerate}[leftmargin=1.5em, noitemsep, topsep=2pt]
+    \item \textbf{JK Flip-Flop Επιλογής Φάσης ($Q$):} Καθορίζει ποιος λαμπτήρας ανάβει σε κάθε φάση.
+    \item \textbf{Τετραπλός Πολυπλέκτης $2\times 1$ ($M_3 M_2 M_1 M_0$):} Επιλέγει το ενεργό όριο μέτρησης ($N_1$ ή $N_2$).
+    \item \textbf{Σύγχρονος Μετρητής 4-bit με JK Flip-Flops ($C_3 C_2 C_1 C_0$):} Καταμετρά τους παλμούς ρολογιού της τρέχουσας φάσης.
+    \item \textbf{Συγκριτής Ισότητας 4-bit ($C == M$):} Παράγει το σήμα τερματισμού φάσης $\text{TC}$ (Terminal Count).
+\end{enumerate}
+}
+
+\subsubsection*{1. JK Flip-Flop Κατάστασης Φάσης ($Q$) και Οδήγηση Λαμπτήρων $L_1, L_2$}
+Ορίζουμε:
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item $Q = 0$ (\textbf{Φάση $\alpha$ --- διάρκεια $N_1$ παλμοί}): $L_1 = 1, \, L_2 = 0$.
+    \item $Q = 1$ (\textbf{Φάση $\beta$ --- διάρκεια $N_2$ παλμοί}): $L_1 = 0, \, L_2 = 1$.
+\end{itemize}
+Το flip-flop $Q$ αλλάζει κατάσταση (toggle) αποκλειστικά στον παλμό ρολογιού όπου ολοκληρώνεται η μέτρηση ($\text{TC} = 1$):
+\[
+\boxed{L_1 = \overline{Q}, \qquad L_2 = Q, \qquad J_Q = \text{TC}, \qquad K_Q = \text{TC}}
+\]
+
+\subsubsection*{2. Τετραπλός Πολυπλέκτης $2\times 1$ Επιλογής Ορίου Μέτρησης ($M = M_3 M_2 M_1 M_0$)}
+Χρησιμοποιούμε $4$ πολυπλέκτες $2\times 1$ με κοινή είσοδο επιλογής $S = Q$. Όταν $Q = 0$ επιλέγεται η είσοδος $N_1$, ενώ όταν $Q = 1$ επιλέγεται η είσοδος $N_2$:
+\[
+\boxed{M_i = \overline{Q} \cdot N_{1,i} + Q \cdot N_{2,i} \quad \text{για } i \in \{0, 1, 2, 3\}}
+\]
+
+\subsubsection*{3. Συγκριτής Ισότητας 4-bit ($C == M$) με Πύλες AND/OR/NOT}
+Για να ελέγξουμε αν η έξοδος του μετρητή $C_3 C_2 C_1 C_0$ ισούται με το επιλεγμένο όριο $M_3 M_2 M_1 M_0$, συγκρίνουμε κάθε ζεύγος bits $C_i, M_i$ μέσω ισοδυναμίας (XNOR υλοποιημένης με AND/OR/NOT):
+\[
+\boxed{E_i = C_i \cdot M_i + \overline{C_i} \cdot \overline{M_i} \quad (i = 0, 1, 2, 3), \qquad \text{TC} = E_3 \cdot E_2 \cdot E_1 \cdot E_0}
+\]
+
+\subsubsection*{4. Σύγχρονος Μετρητής 4-bit με 4 JK Flip-Flops ($C_3 C_2 C_1 C_0$)}
+Για να διαρκεί κάθε φάση ακριβώς $M$ περιόδους ρολογιού ($M \in \{1, \dots, 14\}$), ο μετρητής ξεκινά από την τιμή $C = 0001_2 \ (1_{10})$ και αυξάνεται κατά $1$ σε κάθε παλμό ρολογιού όσο $\text{TC} = 0$ ($1, 2, \dots, M$). Μόλις φτάσει στην τιμή $C = M$ ($\text{TC} = 1$), στον επόμενο παλμό ρολογιού επανέρχεται σύγχρονα στην τιμή $0001_2$ (δηλαδή $C_3^+ = 0, C_2^+ = 0, C_1^+ = 0, C_0^+ = 1$).
+
+Θέτοντας τα σήματα διάδοσης κρατουμένου $T_0 = 1, \; T_1 = C_0, \; T_2 = C_1 \cdot C_0, \; T_3 = C_2 \cdot C_1 \cdot C_0$:
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item Για το $\text{LSB}$ ($C_0$): Όταν $\text{TC}=0$ εκτελεί toggle ($J_{C_0}=1, K_{C_0}=1$), ενώ όταν $\text{TC}=1$ τίθεται σε $C_0^+=1$ ($J_{C_0}=1, K_{C_0}=0$).
+    \item Για τα ψηφία $C_i$ ($i = 1, 2, 3$): Όταν $\text{TC}=0$ εκτελούν toggle αν $T_i=1$ ($J_{C_i}=T_i, K_{C_i}=T_i$), ενώ όταν $\text{TC}=1$ μηδενίζονται $C_i^+=0$ ($J_{C_i}=0, K_{C_i}=1$).
+\end{itemize}
+\[
+\boxed{\begin{aligned}
+J_{C_0} &= 1, & K_{C_0} &= \overline{\text{TC}} \\
+J_{C_1} &= \overline{\text{TC}} \cdot C_0, & K_{C_1} &= \text{TC} + C_0 \\
+J_{C_2} &= \overline{\text{TC}} \cdot C_1 \cdot C_0, & K_{C_2} &= \text{TC} + C_1 \cdot C_0 \\
+J_{C_3} &= \overline{\text{TC}} \cdot C_2 \cdot C_1 \cdot C_0, & K_{C_3} &= \text{TC} + C_2 \cdot C_1 \cdot C_0
+\end{aligned}}
+\]
+\textit{(Σημείωση: Αν ο μετρητής ξεκινά από το $0000_2$ και μετρά $0, 1, \dots, M$, τότε οι εξισώσεις του μετρητή γίνονται $J_{C_i} = \overline{\text{TC}}\cdot T_i$ και $K_{C_i} = \text{TC} + T_i$ για όλα τα $i = 0, 1, 2, 3$).}
+
+\subsection*{Β) (1,5 μονάδες) Επέκταση Κυκλώματος σε Κύκλο 3 Φάσεων ($N_1 \rightarrow N_2 \rightarrow N_1$)}
+
+Διατηρούμε αυτούσια τη μονάδα χρονισμού του Ερωτήματος Α (τον τετραπλό πολυπλέκτη $2\times 1$, τον σύγχρονο μετρητή 4-bit και τον συγκριτή ισότητας που παράγει το $\text{TC}$) και αντικαθιστούμε το μεμονωμένο flip-flop φάσης με μία \textbf{Μηχανή Πεπερασμένων Καταστάσεων (FSM) 3 καταστάσεων} υλοποιημένη με δύο JK flip-flops ($Q_1, Q_0$):
+\begin{itemize}[leftmargin=1.5em, noitemsep]
+    \item \textbf{Φάση $\alpha$ ($Q_1 Q_0 = 00$):} $L_1 = 0, \, L_2 = 0$ για $N_1$ παλμούς ρολογιού (επιλογή $N_1 \implies S_{\text{MUX}} = 0$).
+    \item \textbf{Φάση $\beta$ ($Q_1 Q_0 = 01$):} $L_1 = 1, \, L_2 = 0$ για $N_2$ παλμούς ρολογιού (επιλογή $N_2 \implies S_{\text{MUX}} = 1$).
+    \item \textbf{Φάση $\gamma$ ($Q_1 Q_0 = 10$):} $L_1 = 1, \, L_2 = 1$ για $N_1$ παλμούς ρολογιού (επιλογή $N_1 \implies S_{\text{MUX}} = 0$).
+    \item \textbf{Κατάσταση $Q_1 Q_0 = 11$:} Μη χρησιμοποιούμενη / αδιάφορη κατάσταση ($X$).
+\end{itemize}
+
+\subsubsection*{Πίνακας Μεταβάσεων, Διέγερσης των JK Flip-Flops ($Q_1, Q_0$) και Εξόδων}
+
+\[
+\begin{array}{cc|c|cc|cc|cc|c|cc}
+\toprule
+Q_1 & Q_0 & \text{TC} & Q_1^+ & Q_0^+ & J_1 & K_1 & J_0 & K_0 & S_{\text{MUX}} & L_1 & L_2 \\
+\midrule
+0 & 0 & 0 & 0 & 0 & 0 & X & 0 & X & 0 \ (N_1) & 0 & 0 \\
+0 & 0 & 1 & 0 & 1 & 0 & X & 1 & X & 0 \ (N_1) & 0 & 0 \\
+\midrule
+0 & 1 & 0 & 0 & 1 & 0 & X & X & 0 & 1 \ (N_2) & 1 & 0 \\
+0 & 1 & 1 & 1 & 0 & 1 & X & X & 1 & 1 \ (N_2) & 1 & 0 \\
+\midrule
+1 & 0 & 0 & 1 & 0 & X & 0 & 0 & X & 0 \ (N_1) & 1 & 1 \\
+1 & 0 & 1 & 0 & 0 & X & 1 & 0 & X & 0 \ (N_1) & 1 & 1 \\
+\midrule
+1 & 1 & 0, 1 & X & X & X & X & X & X & X & X & X \\
+\bottomrule
+\end{array}
+\]
+
+\subsubsection*{Ελαχιστοποιημένες Εξισώσεις Διέγερσης και Εξόδων}
+Από τον παραπάνω πίνακα (αξιοποιώντας τους αδιάφορους όρους της κατάστασης $Q_1 Q_0 = 11$) προκύπτουν άμεσα οι βέλτιστες εξισώσεις:
+\[
+\boxed{\begin{aligned}
+J_1 &= Q_0 \cdot \text{TC}, & K_1 &= \text{TC} \\
+J_0 &= \overline{Q_1} \cdot \text{TC}, & K_0 &= \text{TC} \\
+S_{\text{MUX}} &= Q_0, & L_1 &= Q_1 + Q_0, \qquad L_2 = Q_1
+\end{aligned}}
+\]
+
+\end{document}
