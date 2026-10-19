@@ -1,6 +1,8 @@
 # voithima-logiki-sxediasi-shmmy
 Φοιτητικό Βοήθημα Λογικής Σχεδίασης Ψηφιακών Συστημάτων - Ύλη ΣΗΜΜΥ ΕΜΠ
 
+Το παρόν αρχείο σημειώσεων και λυμένων θεμάτων αποσκοπεί αποκλειστικά στην ενίσχυση της μελέτης των σπουδαστών και σε καμία περίπτωση δεν αντικαθιστά την αξία των από αμφιθεάτρου διαλέξεων
+
 [Μέρος 1](https://github.com/pqfan/voithima-logiki-sxediasi-shmmy/blob/main/Part1.md)
 [Μέρος 2](https://github.com/pqfan/voithima-logiki-sxediasi-shmmy/blob/main/Part2.md)
 [Μέρος 3](https://github.com/pqfan/voithima-logiki-sxediasi-shmmy/blob/main/Part3.md)
