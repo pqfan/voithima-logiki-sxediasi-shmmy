@@ -11,3 +11,4 @@
 
 Λύσεις παλαιότερων θεμάτων
 [Επαναληπτική 2026](https://github.com/pqfan/voithima-logiki-sxediasi-shmmy/blob/main/%CE%9B%CE%A3%CE%A8%CE%A3%20%CE%9B%CE%A5%CE%A3%CE%95%CE%99%CE%A3%20%CE%98%CE%95%CE%9C%CE%91%CE%A4%CE%A9%CE%9D/%CE%952026/08_09_2026.md)
+[Κανονική 2026](https://github.com/pqfan/voithima-logiki-sxediasi-shmmy/blob/main/%CE%9B%CE%A3%CE%A8%CE%A3%20%CE%9B%CE%A5%CE%A3%CE%95%CE%99%CE%A3%20%CE%98%CE%95%CE%9C%CE%91%CE%A4%CE%A9%CE%9D/%CE%9A2026/2026.md)
